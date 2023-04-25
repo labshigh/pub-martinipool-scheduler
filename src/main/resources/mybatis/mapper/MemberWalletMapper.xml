@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.staking.mapper.MemberWalletMapper">
+  <insert id="insertWalletTransaction" parameterType="com.labshigh.martinipool.scheduler.staking.dao.WalletTransactionDao" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO wallet_transation
+    (
+      transaction_id,
+      user_id,
+      token_id,
+      status,
+      amount,
+      fee,
+      balance,
+      tx_hash,
+      memo,
+      to_user_id,
+      reg_date,
+      type,
+      to_address,
+      ref_transaction_id,
+      from_address,
+      fee_symbol,
+      fee_token_id,
+      price_krw,
+      price_usd,
+      inner_tx,
+      member_uid)
+    VALUES
+      (#{transactionId},
+       #{userId},
+       #{tokenId},
+       #{status},
+       #{amount},
+       #{fee},
+       #{balance},
+       #{txHash},
+       #{memo},
+       #{toUserId},
+       #{regDate},
+       #{type},
+       #{toAddress},
+       #{refTransactionId},
+       #{fromAddress},
+       #{feeSymbol},
+       #{feeTokenId},
+       #{priceKrw},
+       #{priceUsd},
+       #{innerTx},
+       #{memberUid});
+  </insert>
+
+  <select id="get" resultType="com.labshigh.martinipool.scheduler.staking.dao.MemberWalletDao">
+    SELECT uid,
+           created_at,
+           updated_at,
+           deleted_flag,
+           used_flag,
+           coin_id,
+           token_id,
+           address,
+           member_uid,
+           referrer_code,
+           m_eth,
+           balance,
+           user_id,
+           referrer,
+           mig_eth,
+           mig_staking
+    FROM member_wallet m
+    WHERE deleted_flag = false
+    <if test="memberUid != null and memberUid > 0">
+      AND member_uid = #{memberUid}
+    </if>
+    <if test="coinId != null and coinId > 0">
+      AND coin_id = #{coinId}
+    </if>
+    <if test="tokenId != null and tokenId > 0">
+      AND token_id = #{tokenId}
+    </if>
+    <if test="referrerCode != null">
+      AND referrer_code = #{referrerCode}
+    </if>
+    <if test="uid != null and uid > 0">
+      AND uid = #{uid}
+    </if>
+    <if test="userId != null">
+      AND user_id = #{userId}
+    </if>
+  </select>
+
+  <select id="getList" resultType="com.labshigh.martinipool.scheduler.staking.dao.MemberWalletDao">
+    SELECT uid,
+    created_at,
+    updated_at,
+    deleted_flag,
+    used_flag,
+    coin_id,
+    token_id,
+    address,
+    member_uid,
+    referrer_code,
+    m_eth,
+    referrer
+    FROM member_wallet m
+    WHERE deleted_flag = false
+    <if test="memberUid != null and memberUid > 0">
+      AND member_uid = #{memberUid}
+    </if>
+    <if test="coinId != null and coinId > 0">
+      AND coin_id = #{coinId}
+    </if>
+    <if test="tokenId != null and tokenId > 0">
+      AND token_id = #{tokenId}
+    </if>
+    <if test="referrerCode != null">
+      AND referrer_code = #{referrerCode}
+    </if>
+    ORDER BY created_at ASC
+  </select>
+  <update id="updateMEth">
+    UPDATE member_wallet
+    SET m_eth = #{mEth}
+    WHERE uid = #{uid}
+  </update>
+  <update id="updateWalletBalance">
+    UPDATE member_wallet
+    SET balance = #{balance}
+    WHERE user_id = #{userId}
+  </update>
+</mapper>

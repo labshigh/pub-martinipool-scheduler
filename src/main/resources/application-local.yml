@@ -1,0 +1,48 @@
+app:
+  profile: local
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/martinipool?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
+    username: root
+    password: Flier7malt
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      max-lifetime: 26000
+    initialization-mode: always
+    initialize: true
+    sql-script-encoding: utf-8
+    continue-on-error: true
+
+# server
+server:
+  tomcat:
+    basedir: /tmp/labshigh/logs/martinipool-scheduler
+
+logging:
+  file: /tmp/labshigh/logs/martinipool-scheduler/common.log
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
+    rolling-file-name: /tmp/labshigh/logs/martinipool-scheduler/common.log.%d{yyyy-MM-dd}.%i.gz
+  level:
+    com:
+      labshigh:
+        martinipool: DEBUG
+
+nftmoa:
+  minting:
+    api:
+      url: http://52.78.220.163:3200
+
+ethereum:
+  url: https://data-seed-prebsc-1-s1.binance.org:8545
+  token:
+
+martinipool:
+  wallet:
+    api: http://13.250.98.67:9000
+
+telegram:
+  access_token: 6253167396:AAH8iFREQ9QcJkRTZCZPxHL-FbaadILqacI
+  chat_id: -1001590574818

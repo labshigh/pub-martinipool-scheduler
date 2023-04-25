@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.exchange.mapper.ExchangeVirtual2Mapper">
+  <insert id="insert" parameterType="com.labshigh.martinipool.scheduler.exchange.dao.ExchangeVirtual2Dao" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO exchange_virtual2 (name, price)
+    VALUES (#{name}, #{price})
+    ON DUPLICATE KEY UPDATE name = #{name},
+        price = #{price}
+  </insert>
+</mapper>

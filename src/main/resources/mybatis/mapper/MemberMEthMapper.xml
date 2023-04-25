@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.staking.mapper.MemberMEthMapper">
+  <insert id="insertMemberMEth" parameterType="com.labshigh.martinipool.scheduler.staking.dao.MemberMEthDao" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO martinipool.member_meth
+    (
+      meth_type,
+      meth_amount,
+      meth_use_amount,
+      memo,
+      member_uid,
+      item_uid,
+      item_buy_uid,
+      wallet_id
+    )
+    VALUES
+    (
+      #{methType},
+      #{methAmount},
+      #{methUseAmount},
+      #{memo},
+      #{memberUid},
+      #{itemUid},
+      #{itemBuyUid},
+      #{walletId}
+    );
+  </insert>
+
+
+</mapper>

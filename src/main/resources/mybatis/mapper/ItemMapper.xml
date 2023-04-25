@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.staking.mapper.ItemMapper">
+
+
+  <select id="list" resultType="com.labshigh.martinipool.scheduler.staking.dao.ItemDao">
+    SELECT `uid`,
+           `created_at`,
+           `updated_at`,
+           `deleted_flag`,
+           `used_flag`,
+           `vip_flag`,
+           `round`,
+           `close_round`,
+           `item_kind`,
+           `interest`,
+           `start_at`,
+           `end_at`,
+           `request_end_at`,
+           `min_price`,
+           `withdrawal_request_end_at`,
+           `auto_item_uid`
+    FROM `martinipool`.`item`
+    WHERE deleted_flag = false AND
+      used_flag = true AND
+      settlement_flag = false AND
+      end_at = #{endAt}
+  </select>
+
+  <select id="get" resultType="com.labshigh.martinipool.scheduler.staking.dao.ItemDao">
+    SELECT `uid`,
+    `created_at`,
+    `updated_at`,
+    `deleted_flag`,
+    `used_flag`,
+    `vip_flag`,
+    `round`,
+    `close_round`,
+    `item_kind`,
+    `interest`,
+    `start_at`,
+    `end_at`,
+    `request_end_at`,
+    `min_price`,
+    `withdrawal_request_end_at`,
+    `auto_item_uid`
+    FROM `martinipool`.`item`
+    WHERE deleted_flag = false AND
+    used_flag = true
+    <if test="year != null">
+      AND (DATE_FORMAT(start_at, '%Y') )= #{year}
+    </if>
+    <if test="round != null">
+      AND round = #{round}
+    </if>
+    <if test="endAt != null">
+      AND end_at = #{endAt}
+    </if>
+    <if test="uid > 0">
+      AND uid = #{uid}
+    </if>
+  </select>
+
+  <update id="updateSettlementFlag" >
+    UPDATE item
+    SET
+      settlement_flag = #{settlementFlag}
+    WHERE deleted_flag = false AND
+      used_flag = true AND
+      uid = #{uid}
+  </update>
+</mapper>
+

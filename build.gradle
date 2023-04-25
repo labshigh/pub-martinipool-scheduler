@@ -1,0 +1,98 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.11'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
+    id 'java'
+    id 'war'
+}
+
+def buildNumber = System.getenv('BUILD_NUMBER')
+def jenkinsBuild = buildNumber != null ? buildNumber : "0"
+
+group = 'com.labshigh.martinipool.scheduler'
+version = "1.0.0.0"
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    implementation 'junit:junit:4.13.2'
+
+    // spring
+    implementation 'org.springframework.security:spring-security-crypto'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework:spring-test:5.3.17'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+
+    // web3
+    implementation group: 'org.web3j', name: 'core', version: '5.0.0'
+    implementation group: 'org.web3j', name: 'contracts', version: '5.0.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+
+    // aws sdk
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.238')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+
+    // json
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    // mybatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2'
+
+    runtimeOnly 'mysql:mysql-connector-java'
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+    // lombok
+    implementation 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.awaitility:awaitility:4.1.1'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+task projectVersion {
+    doLast {
+        println "${project.version}"
+    }
+}
+
+task jarName {
+    doLast {
+        println "${archivesBaseName}-${version}.jar"
+    }
+}
+
+bootJar {
+    archivesBaseName = "martinipool-scheduler"
+
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                'Implementation-Version': getArchiveVersion()
+    }
+}
+
+war {
+    enabled = true
+    archivesBaseName = "martinipool-scheduler"
+
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                'Implementation-Version': getArchiveVersion()
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

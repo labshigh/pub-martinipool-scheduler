@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.exchange.mapper.ExchangeVirtualMapper">
+  <insert id="insert" parameterType="com.labshigh.martinipool.scheduler.exchange.dao.ExchangeVirtualDao" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO exchange_virtual (name, id, last, lowest_ask, highest_bid, percent_change, base_volume, quote_volume, is_frozen, post_only, high_24hr, low_24hr, previous_close)
+    VALUES (#{name}, #{id}, #{last}, #{lowestAsk}, #{highestBid}, #{percentChange}, #{baseVolume}, #{quoteVolume}, #{isFrozen}, #{postOnly}, #{high24hr}, #{low24hr}, #{previousClose})
+    ON DUPLICATE KEY UPDATE name = #{name},
+                           id = #{id},
+                           last = #{last},
+                           lowest_ask = #{lowestAsk},
+                           highest_bid = #{highestBid},
+                           percent_change = #{percentChange},
+                           base_volume = #{baseVolume},
+                           quote_volume = #{quoteVolume},
+                           is_frozen = #{isFrozen},
+                           post_only = #{postOnly},
+                           high_24hr = #{high24hr},
+                           low_24hr = #{low24hr},
+                           previous_close = #{previousClose}
+  </insert>
+</mapper>

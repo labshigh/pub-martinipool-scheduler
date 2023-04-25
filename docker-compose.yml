@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  martinipool-scheduler:
+    container_name: martinipool-scheduler
+    #    image: registry.mzcgroup.net/m-verse/metassom/metassom-api:${TAG}
+    environment:
+      - TZ=Asia/Seoul
+      - env=local
+      - "heapOpt=-Xms1024m -Xmx2048m"
+    ports:
+      - "35300:35300"
+    volumes:
+      - /Users/${USER}/logs:/home/labshigh/logs
+    sysctls:
+      - net.core.somaxconn=65000
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail localhost:35300/actuator/health || exit 1" ]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    restart: on-failure

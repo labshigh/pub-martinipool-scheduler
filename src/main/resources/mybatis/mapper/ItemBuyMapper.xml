@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.staking.mapper.ItemBuyMapper">
+  <insert id="insert" keyProperty="uid" parameterType="com.labshigh.martinipool.scheduler.staking.dao.ItemBuyDao" useGeneratedKeys="true">
+    INSERT INTO item_buy (item_uid, market_item_uid, price, member_uid,price_unit,user_id,auto_progress_flag
+                         ,referrer)
+    VALUES (#{itemUid}, #{marketItemUid}, #{price}, #{memberUid},#{priceUnit}, #{userId} ,#{autoProgressFlag}
+           ,(
+              SELECT referrer
+              FROM member_wallet mw
+              where mw.used_flag = true AND
+                mw.deleted_flag = false AND
+                mw.user_id = #{userId} AND
+                #{priceUnit} = 'ETH')
+           )
+  </insert>
+
+  <select id="get" resultType="com.labshigh.martinipool.scheduler.staking.dao.ItemBuyDetailDao">
+    SELECT
+    ib.user_id,
+    sum(ib.price) as price
+    FROM martinipool.item_buy ib
+    LEFT OUTER JOIN item i on ib.item_uid = i.uid
+    WHERE ib.deleted_flag = false AND
+    ib.used_flag = true
+    <if test="itemUid > 0">
+      AND ib.item_uid = #{itemUid}
+    </if>
+    <if test="priceUnit != null">
+      AND ib.price_unit = #{priceUnit}
+    </if>
+    <if test="userId != null">
+      AND ib.user_id = #{userId}
+    </if>
+    <if test = "processStatus == 2" > /* 진행중 */
+      AND #{startAt} BETWEEN DATE_FORMAT(i.start_at,'%Y-%m-%d') AND DATE_FORMAT(i.end_at , '%Y-%m-%d')
+    </if>
+    GROUP BY ib.user_id
+  </select>
+  <select id="list" resultType="com.labshigh.martinipool.scheduler.staking.dao.ItemBuyDetailDao">
+    SELECT
+        sum(`price`) as price,
+        user_id,
+        MAX(referrer) as referrer
+    FROM `martinipool`.`item_buy`
+    WHERE deleted_flag = false AND
+      used_flag = true
+      <if test="itemUid > 0">
+        AND item_uid = #{itemUid}
+      </if>
+      <if test="priceUnit != null">
+        AND price_unit = #{priceUnit}
+      </if>
+    GROUP BY user_id
+  </select>
+
+  <select id="listProgress" resultType="com.labshigh.martinipool.scheduler.staking.dao.ItemBuyDetailDao">
+    SELECT *
+    FROM (
+    SELECT ib.uid,
+    ib.created_at,
+    ib.updated_at,
+    ib.deleted_flag,
+    ib.used_flag,
+    ib.member_uid,
+    ib.price,
+    (ib.price * 1) * (krw.last * 1)  as krw_price,
+    (ib.price * 1) * (( i.interest * 1) / 100)  AS interest_price,
+    (ib.price * 1) * (( i.interest * 1) / 100) * (krw.last * 1)  AS krw_interest_price,
+    i.start_at,
+    i.end_at,
+    i.interest,
+    i.round,
+    i.close_round,
+    i.request_end_at,
+    i.min_price,
+    i.withdrawal_request_end_at,
+    krw.last AS krw_eth,
+    ib.price_unit,
+    ib.item_uid,
+    DATEDIFF(NOW(), i.withdrawal_request_end_at) AS remaining_days,
+    ib.user_id
+    FROM item_buy ib LEFT OUTER JOIN item i on ib.item_uid = i.uid
+    LEFT OUTER JOIN exchange_virtual krw on krw.name = 'ETH-KRW'
+    WHERE ib.deleted_flag = false AND
+    ib.used_flag = true AND
+    ib.member_uid = #{memberUid} AND
+    ib.user_id = #{userId}
+    <if test="uid > 0">
+      AND ib.uid = #{uid}
+    </if>
+    <if test="itemUid > 0">
+      AND i.uid = #{itemUid}
+    </if>
+    ) RS
+    WHERE 1 = 1
+    <if test = "processStatus == 1"> /* 준비 */
+      AND NOW() <![CDATA[ < ]]> start_at
+    </if>
+
+    <if test = "processStatus == 2"> /* 진행중 */
+      AND NOW() BETWEEN start_at AND end_at
+    </if>
+
+    <if test = "processStatus == 3"> /* 완료 */
+      AND (NOW() > end_at OR remaining_days >= -7)
+    </if>
+
+    <if test = "processStatus == 4"> /* 출금 요청 데이터 */
+      AND NOW() BETWEEN start_at AND withdrawal_request_end_at
+    </if>
+
+    <if test="startAt != null and endAt != null">
+      AND end_at BETWEEN #{startAt} AND #{endAt}
+    </if>
+
+    <if test="year != null">
+      AND (DATE_FORMAT(start_at, '%Y') = #{year} OR DATE_FORMAT(end_at, '%Y') = #{year} )
+    </if>
+    ORDER BY RS.created_at DESC
+  </select>
+
+
+  <update id="updateAutoProgressFlag">
+    UPDATE item_buy
+    SET auto_progress_flag = #{autoProgressFlag}
+    WHERE user_id = #{userId}
+    and item_uid = #{itemUid}
+  </update>
+</mapper>
+

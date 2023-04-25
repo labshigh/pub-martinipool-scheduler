@@ -1,0 +1,40 @@
+app:
+  profile: dev
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db-dppkk.vpc-cdb.ntruss.com/martinipool?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
+    username: martinipool
+    password: 6M6yTn4WL9A?X@BvofHm
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      max-lifetime: 26000
+    initialization-mode: always
+    initialize: true
+    sql-script-encoding: utf-8
+    continue-on-error: true
+
+# server
+server:
+  tomcat:
+    basedir: /home/labshigh/logs/martinipool-scheduler
+
+logging:
+  file: /home/labshigh/logs/martinipool-scheduler/common.log
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
+    rolling-file-name: /home/labshigh/logs/martinipool-scheduler/common.log.%d{yyyy-MM-dd}.%i.gz
+  level:
+    com:
+      labshigh:
+        martinipool: DEBUG
+
+nftmoa:
+  minting:
+    api:
+      url: http://52.78.220.163:3200
+
+ethereum:
+  url: https://data-seed-prebsc-1-s1.binance.org:8545
+  token:

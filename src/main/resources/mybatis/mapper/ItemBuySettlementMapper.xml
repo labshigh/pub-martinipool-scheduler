@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.staking.mapper.ItemBuySettlementMapper">
+  <select id="list" resultType="com.labshigh.martinipool.scheduler.staking.dao.ItemBuySettlementDao">
+    SELECT ibs.uid,
+    ibs.created_at,
+    ibs.updated_at,
+    ibs.deleted_flag,
+    ibs.used_flag,
+    ibs.type,
+    ibs.price,
+    ibs.withdrawal_approval_flag,
+    ibs.withdrawal_completed_flag,
+    ibs.item_uid,
+    ibs.member_uid,
+    ibs.user_id
+    FROM item_buy_settlement ibs
+    WHERE ibs.used_flag = true AND
+        ibs.deleted_flag = false
+        AND ibs.item_uid = #{itemUid}
+        AND ibs.user_id = #{userId}
+
+  </select>
+  <update id="updateWithdrawalCompletedFlag">
+    UPDATE item_buy_settlement
+    SET withdrawal_completed_flag = #{withdrawalCompletedFlag}
+    WHERE uid = #{uid}
+  </update>
+
+
+</mapper>

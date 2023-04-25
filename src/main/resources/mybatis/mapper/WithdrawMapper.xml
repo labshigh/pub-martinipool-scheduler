@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.martinipool.scheduler.staking.mapper.WithdrawMapper">
+    <insert id="insert" keyProperty="uid" parameterType="com.labshigh.martinipool.scheduler.staking.dao.WithdrawDao" useGeneratedKeys="true">
+        INSERT INTO wallet_db.eth_withdraw_request (`to_address`, from_address, amount, type, `token_id`)
+        VALUES
+            (#{toWallet}, #{fromWallet}, #{requestQuantity}, 'MO', 2);
+    </insert>
+
+    <select id="list"  resultType="com.labshigh.martinipool.scheduler.staking.dao.WithdrawDao">
+        <![CDATA[
+        SELECT uid,
+               created_at,
+               updated_at,
+               deleted_flag,
+               used_flag,
+               member_uid,
+               tx_hash,
+               from_wallet,
+               (SELECT user_id from member_wallet where address=from_wallet) as user_id,
+               to_wallet,
+               (SELECT user_id from member_wallet where address=to_wallet) as toUser_id,
+               request_quantity,
+               status,
+               status_memo,
+               member_wallet_withdrawal_uid,
+               schedule_status,
+               schedule_status_memo,
+               transaction_id,
+               admin_verification_date,
+               manual_flag,
+               internal_wallet_flag as internalFlag
+        FROM   withdraw_request wr
+
+        WHERE  (wr.schedule_status IS NULL OR  wr.schedule_status = 0)
+
+          AND wr.status IS NOT NULL
+
+          AND wr.status = true
+          AND wr.admin_verification_date <= Date_add(Now(), INTERVAL -30 minute)
+      ]]>
+    </select>
+
+
+    <update id="updateScheduleStatus">
+        UPDATE  withdraw_request
+        SET  schedule_status =  #{scheduleStatus},
+             schedule_at =  now()
+        WHERE  uid = #{uid}
+    </update>
+
+    <update id="updateTransactionId">
+        UPDATE  withdraw_request
+           SET  transaction_id = #{transactionId}
+         WHERE  uid = #{uid}
+    </update>
+
+    <update id="updateTxHash">
+        UPDATE  withdraw_request
+        SET  tx_hash = #{txHash},
+             transaction_id = #{transactionId}
+        WHERE  uid = #{uid}
+    </update>
+
+
+    <select id="getMember" resultType="com.labshigh.martinipool.scheduler.staking.dao.MemberDao">
+        SELECT uid,
+        created_at,
+        updated_at,
+        deleted_flag,
+        used_flag,
+        wallet_address,
+        nickname,
+        email,
+        email_verified_flag,
+        phone_number,
+        phone_verified_flag,
+        email_newsletter_flag,
+        national_code,
+        referrer,
+        referrer_code,
+        deleted_flag,
+        jumin_file_id,
+        code_file_id,
+        jumin_flag,
+        code_flag,
+        password,
+        code,
+        code_date,
+        approve_type,
+        approve_id,
+        approve_date,
+        m_eth,
+        migrated_flag,
+        wallet_id,
+        imsi_password_flag,
+        cryptobro_id
+        FROM member m
+        WHERE deleted_flag = false AND
+        <choose>
+            <when test="walletAddress != null">
+                wallet_address = #{walletAddress}
+            </when>
+            <when test="uid != null and uid != 0">
+                uid = #{uid}
+            </when>
+            <when test="email != null">
+                email = #{email}
+            </when>
+            <when test="referrer != null">
+                referrer_code = #{referrer}
+            </when>
+            <when test="cryptobroId != null">
+                cryptobro_id = #{cryptobroId}
+            </when>
+
+            <otherwise>
+                uid = #{uid}
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getWalletMember" resultType="com.labshigh.martinipool.scheduler.staking.dao.MemberDao">
+        SELECT m.uid,
+        m.created_at,
+        m.updated_at,
+        m.deleted_flag,
+        m.used_flag,
+        m.wallet_address,
+        m.nickname,
+        m.email,
+        m.email_verified_flag,
+        m.phone_number,
+        m.phone_verified_flag,
+        m.email_newsletter_flag,
+        m.national_code,
+        m.referrer,
+        m.referrer_code,
+        m.deleted_flag,
+        m.jumin_file_id,
+        m.code_file_id,
+        m.jumin_flag,
+        m.code_flag,
+        m.password,
+        m.code,
+        m.code_date,
+        m.approve_type,
+        m.approve_id,
+        m.approve_date,
+        m.m_eth,
+        m.migrated_flag,
+        m.wallet_id,
+        m.imsi_password_flag,
+        m.cryptobro_id,
+        mw.address,
+        mw.user_id
+        FROM member m LEFT JOIN member_wallet mw ON m.uid = mw.member_uid
+        WHERE m.deleted_flag = false AND
+        <choose>
+            <when test="address != null">
+                address = #{address}
+            </when>
+        </choose>
+    </select>
+</mapper>
