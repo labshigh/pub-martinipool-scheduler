@@ -156,7 +156,8 @@ public class ItemStakingService extends AbstractRestService {
                   BigDecimal compareEth = BigDecimal.valueOf(5);
                   // 진행 중인 스테이킹이 5이더 보다 크면 레퍼러 수익 지급
                   if( referrerItemBuyDetailDao.getPrice().compareTo(compareEth) > -1){
-                    BigDecimal referrerInterest = BigDecimal.valueOf( 0.1 );
+
+                    BigDecimal referrerInterest = BigDecimal.valueOf( Integer.parseInt(itemDao.getReferrerInterest())*0.01 );
                     // 레퍼러 수익 지급
                     BigDecimal referrerCalculateInterest = stakerItemBuyDetailDao.getPrice().multiply(referrerInterest).setScale(3, RoundingMode.DOWN);
                     String memo = year +" "+ itemDao.getRound() +"회차 레퍼럴 유저 수익지급 " + memberWalletDao.getReferrerCode() +" "+memberWalletDao.getUserId() ;

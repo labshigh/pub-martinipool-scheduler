@@ -22,15 +22,18 @@ server:
     basedir: /home/labshigh/logs/martinipool-scheduler
 
 logging:
-  file: /home/labshigh/logs/martinipool-scheduler/common.log
   pattern:
     dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
-    rolling-file-name: /home/labshigh/logs/martinipool-scheduler/common.log.%d{yyyy-MM-dd}.%i.gz
   level:
     root: ERROR
     com:
       labshigh:
         martinipool: DEBUG
+  logback:
+    rollingpolicy:
+      file-name-pattern: /home/labshigh/logs/martinipool-scheduler/common.log.%d{yyyy-MM-dd}.%i.gz
+  file:
+    name: /home/labshigh/logs/martinipool-scheduler/common.log
 
 nftmoa:
   minting:

@@ -26,6 +26,7 @@ public class ItemDao {
   private String round;
   private String closeRound;
   private String interest;
+  private String referrerInterest;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime startAt;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
