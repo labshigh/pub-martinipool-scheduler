@@ -227,11 +227,12 @@ public class WithdrawService extends AbstractRestService {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     // 스테이킹 상품 조회
     WalletBalanceResponseModel walletBalanceResponseModel = memberWalletService.getMasterBalance();
+    if( walletBalanceResponseModel.getBalance() > 5 ) {
+      String msg = "메인지갑 수량 : [ " + walletBalanceResponseModel.getBalance() + " ]ETH" + "\n";
+      msg = msg + "(" + now.format(formatter) + ")";
 
-    String msg = "메인지갑 수량 : [ " + walletBalanceResponseModel.getBalance() + " ]ETH" +"\n";
-    msg = msg + "("+ now.format(formatter) +")";
-
-    this.sendTelegram(msg);
+      this.sendTelegram(msg);
+    }
 
   }
   public ResponseModel sendTelegram(String msg) {
